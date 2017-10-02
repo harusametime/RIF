@@ -4,6 +4,8 @@ Created on 2017/09/30
 '''
 
 import numpy as np
+import scipy.sparse.linalg
+from scipy.sparse import lil_matrix
 
 '''
 Left-looking Gram-Schmidt process for robust incomplete factorization
@@ -25,10 +27,17 @@ class RIF(object):
         
     def factorize(self):
         size = C.shape[0]
-        Z = np.zeros((size,)*2)
-        L = np.zeros((size,)*2)
-        _Z = np.zeros((size,)*3)
-        _Z[0,:,:] = np.identity(size)
+        print("a")
+        Z = lil_matrix((size,size))
+        print("b")
+        L = lil_matrix((size,size))
+        
+        print("c")
+        _Z =[lil_matrix((size,size)) for i in range(size)]
+        _Z[0][:,:] = np.identity(size)
+        
+        
+        print("d")
         
         for k in range(size):             
             if k > 0:
@@ -42,14 +51,19 @@ class RIF(object):
         return Z, L
     
     def Cinner(self, x, y):
-        return np.matmul(np.matmul(x.T, self.C), y)
+        #return np.matmul(np.matmul(x.T, self.C), y)
+        return x.T *self.C *y
         
     def Cnorm(self, x):
         return np.sqrt(self.Cinner(x,x))
         
 if __name__ == '__main__':
-    A = np.asmatrix(np.random.rand(5,4))
+    #A = np.asmatrix(np.random.rand(5,4))
+    matrix_size = np.array([20000,10000])
+    matrix_density = 0.01
+    A = scipy.sparse.rand(matrix_size[0],matrix_size[1], density = matrix_density ) 
     C = A.T * A
+
     r = RIF(C);
     Z, L = r.factorize()
     
