@@ -12,6 +12,7 @@ import time
 Left-looking Gram-Schmidt process for robust incomplete factorization
 
 Reference:
+    Algorithm 1 in 
     Jennifer Scott and Miroslav Tuma:
     Preconditioning of Linear Least Squares by Robust Incomplete Factorization for Implicitly Held Normal Equations
     SIAM J. Sci. Comput., 38(6), C603-C623 (2016)
@@ -19,12 +20,11 @@ Reference:
 '''
 class RIF(object):
 
-    def __init__(self, C, tol = 0.1):
+    def __init__(self, C):
         '''
         Constructor
         '''
         self.C = C
-        self.tol = tol
         
     def factorize(self):
         size = C.shape[0]
@@ -35,9 +35,9 @@ class RIF(object):
             _Z = identity(size, format = "csc")         
             if k > 0:
                 for j in range(k):
-                    L[j,k] = self.Cinner(_Z[:,k],Z[:,j])
+                    L[k,j] = self.Cinner(_Z[:,k],Z[:,j])
                     print(k,j,time.process_time())
-                    _Z[:,k] = _Z[:,k] - L[j,k]*Z[:,j]
+                    _Z[:,k] = _Z[:,k] - L[k,j]*Z[:,j]
 
             L[k,k] = self.Cnorm(_Z[:,k])
             Z[:,k]= _Z[:,k] / L[k,k]
@@ -45,7 +45,7 @@ class RIF(object):
         return Z, L
     
     def Cinner(self, x, y):
-        return x.T.dot(C.dot(y))[0,0]
+        return x.T.dot(self.C.dot(y))[0,0]
         #return x.dot(y.T)[0,0]
         #return np.matmul(np.matmul(x.T, self.C), y)
         #return (x.T *self.C *y)[0,0]
@@ -57,8 +57,8 @@ if __name__ == '__main__':
     #A = np.asmatrix(np.random.rand(5,4))
     
     
-    matrix_size = np.array([200,100])
-    matrix_density = 0.1
+    matrix_size = np.array([10,5])
+    matrix_density = 1
     
     A = scipy.sparse.rand(matrix_size[0],matrix_size[1], density = matrix_density, format = 'csr') 
     C = A.T * A
