@@ -34,7 +34,8 @@ class RIFimply(object):
          
         # Lower triangle matrix L
         L = lil_matrix((size,size))
-        
+        _Z = lil_matrix((size,size))
+         
         #Compute a column scaling S
         s_diag = scipy.sparse.linalg.norm(self.A, axis = 0)
         s_diag = np.power(s_diag,-1)
@@ -47,6 +48,7 @@ class RIFimply(object):
         #L[0,:] =  (1+self.shift)* scipy.sparse.linalg.norm(self.A[0,:]) # looks strange for lower triangle. L[0,0]?
         L[0,0] =  (1+self.shift)* scipy.sparse.linalg.norm(self.A[0,:]) 
         Z = identity(size, format = "csc")
+       
         
         print(size)
         for k in range(size-1):
@@ -59,6 +61,10 @@ class RIFimply(object):
             
             for j in J:
                 print(j)
+                
+                #MGS case
+                v = Z[:,j]
+                u = _Z[:k]
             
             
         
