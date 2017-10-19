@@ -15,7 +15,8 @@ Robust Incomplete Factorization (RIF) is known as a method for generating a prec
 # Source codes
 
 - RIF.py  
-    aa
+    Left-looking Gram-Schmidt process for robust incomplete factorization
 
-- 
+- RIFimply.py (Incomplete)  
+    Left-looking RIF algorithm for LS with C = A^T A held implicitly
     
